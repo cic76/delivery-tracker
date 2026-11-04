@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chedid Food - Delivery Tracker</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{font-family:Arial;background:#f4f4f4;margin:0;padding:18px}
+h2{color:#701b32}
+.card{background:white;padding:18px;margin:15px 0;border-radius:12px}
+input,select,button{width:100%;padding:13px;margin:8px 0;box-sizing:border-box;font-size:16px}
+button{background:#701b32;color:white;border:0;border-radius:8px}
+table{width:100%;background:white;border-collapse:collapse}
+td,th{padding:10px;border:1px solid #ddd}
+</style>
+</head>
+<body>
+
+<h2>CHEDID FOOD</h2>
+<h3>Delivery Tracker</h3>
+
+<div class="card">
+<h3>New Invoice</h3>
+
+<label>Employee Name</label>
+<input id="employee" placeholder="Enter your name">
+
+<label>Driver</label>
+<select id="driver">
+<option value="">Select Driver</option>
+</select>
+
+<label>Invoice Number</label>
+<input id="invoice" type="number" placeholder="Invoice number">
+
+<label>Delivery Date</label>
+<input id="date" type="date">
+
+<label>Quantity</label>
+<input id="quantity" type="number" value="1">
+
+<label>Note</label>
+<input id="note" placeholder="Optional">
+
+<button onclick="saveInvoice()">SAVE INVOICE</button>
+<p id="message"></p>
+</div>
+
+<div class="card">
+<h3>Daily Report</h3>
+<input id="reportDate" type="date">
+<button onclick="loadReport()">SHOW REPORT</button>
+<div id="report"></div>
+</div>
+
+<script>
+const SUPABASE_URL = "PASTE_YOUR_PROJECT_URL";
+const SUPABASE_KEY = "PASTE_YOUR_PUBLISHABLE_KEY";
+
+const db = window.supabase.createClient(
+SUPABASE_URL,SUPABASE_KEY
+);
+
+const today = new Date().toLocaleDateString('en-CA');
+document.getElementById('date').value=today;
+document.getElementById('reportDate').value=today;
+
+let drivers=[];
+
+async function loadDrivers(){
+const {data,error}=await db.from('Driver')
+.select('id,"Driver name"')
+.order('id');
+
+if(error){
+alert(error.message);
+return;
+}
+
+drivers=data||[];
+const select=document.getElementById('driver');
+
+drivers.forEach(d=>{
+const option=document.createElement('option');
+option.value=d.id;
+option.textContent=d["Driver name"].trim();
+select.appendChild(option);
+});
+}
+
+async function saveInvoice(){
+const employee=document.getElementById('employee').value.trim();
+const driver=document.getElementById('driver').value;
+const invoice=document.getElementById('invoice').value;
+const date=document.getElementById('date').value;
+const quantity=document.getElementById('quantity').value;
+const note=document.getElementById('note').value;
+
+if(!employee||!driver||!invoice||!date){
+alert('Please complete required fields');
+return;
+}
+
+const {error}=await db.from('Delivery table').insert({
+"Delivery date":date,
+"Driver id":Number(driver),
+"Employee name":employee,
+"Invoice number":Number(invoice),
+"Quantity":Number(quantity||1),
+"Note":note
+});
+
+if(error){
+document.getElementById('message').textContent=
+'Error: '+error.message;
+return;
+}
+
+document.getElementById('message').textContent=
+'Invoice saved successfully!';
+
+document.getElementById('invoice').value='';
+document.getElementById('note').value='';
+}
+
+async function loadReport(){
+const date=document.getElementById('reportDate').value;
+
+const {data,error}=await db.from('Delivery table')
+.select('"Driver id","Invoice number"')
+.eq('"Delivery date"',date);
+
+if(error){
+alert(error.message);
+return;
+}
+
+let html='<table><tr><th>Driver</th><th>Invoices</th></tr>';
+
+drivers.forEach(d=>{
+const count=data.filter(x=>Number(x["Driver id"])===Number(d.id)).length;
+html+='<tr><td>'+d["Driver name"]+'</td><td>'+count+'</td></tr>';
+});
+
+html+='</table>';
+document.getElementById('report').innerHTML=html;
+}
+
+loadDrivers();
+</script>
+</body>
+</html>
