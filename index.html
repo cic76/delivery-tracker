@@ -148,12 +148,12 @@ async function loadReport(){
 const date=document.getElementById('reportDate').value;
 
 const {data,error}=await db.from('Delivery table')
-.select('"Driver id","Invoice number"')
+..select('"Driver id","Invoice number","Employee name"')
 .eq('"Delivery date"',date);
 
 if(error){
 alert(error.message);
-return;
+return;t
 }
 
 let html='<table><tr><th>Driver</th><th>Invoices</th></tr>';
@@ -163,6 +163,14 @@ const count=data.filter(x=>Number(x["Driver id"])===Number(d.id)).length;
 html+='<tr><td>'+d["Driver name"]+'</td><td>'+count+'</td></tr>';
 });
 
+html+='</table>';
+  const {data:employeeData,error:employeeError}=await db.from('Employee').select('"Employee name"');
+if(employeeError){alert(employeeError.message);return;}
+html+='<h3>Employee Report</h3><table><tr><th>Employee</th><th>Invoices</th></tr>';
+employeeData.forEach(e=>{
+const count=data.filter(x=>x["Employee name"]===e["Employee name"]).length;
+html+='<tr><td>'+e["Employee name"]+'</td><td>'+count+'</td></tr>';
+});
 html+='</table>';
 document.getElementById('report').innerHTML=html;
 }
