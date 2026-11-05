@@ -25,7 +25,9 @@ td,th{padding:10px;border:1px solid #ddd}
 <h3>New Invoice</h3>
 
 <label>Employee Name</label>
-<input id="employee" placeholder="Enter your name">
+<select id="employee">
+<option value="">Select Employee</option>
+</select>
 
 <label>Driver</label>
 <select id="driver">
@@ -88,6 +90,23 @@ option.value=d.id;
 option.textContent=d["Driver name"].trim();
 select.appendChild(option);
 });
+}async function loadEmployees(){
+  const {data,error}=await db.from('Employee')
+  .select('"Employee name"');
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  const select=document.getElementById('employee');
+
+  data.forEach(d=>{
+    const option=document.createElement('option');
+    option.value=d["Employee name"];
+    option.textContent=d["Employee name"];
+    select.appendChild(option);
+  });
 }
 
 async function saveInvoice(){
@@ -148,7 +167,7 @@ html+='</table>';
 document.getElementById('report').innerHTML=html;
 }
 
-loadDrivers();
+loadDrivers();loadEmployees();
 </script>
 </body>
 </html>
