@@ -72,7 +72,7 @@ document.getElementById('reportDate').value=today;
 let drivers=[];
 
 async function loadDrivers(){
-const {data,error}=await db.from('Driver name')
+  const {data,error}=await db.from('Driver name')
                                  
 .select('id,"Driver name"')
 .order('id');
