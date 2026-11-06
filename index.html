@@ -83,6 +83,7 @@ return;
 }
 
 alert("Drivers loaded: " + (data ? data.length : 0));
+  drivers = data || [];
 const select=document.getElementById('driver');
 
 drivers.forEach(d=>{
