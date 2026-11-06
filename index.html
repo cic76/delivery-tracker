@@ -93,7 +93,7 @@ select.appendChild(option);
 });
 }async function loadEmployees(){
   const {data,error}=await db.from('Employee')
-  .select('"Employee name"');
+.select('*');
 
   if(error){
     alert(error.message);
