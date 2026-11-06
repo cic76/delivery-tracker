@@ -102,7 +102,7 @@ select.appendChild(option);
 }async function loadEmployees(){
   const {data,error}=await db.from('Employee')
 .select('*');
-
+alert("Employees loaded: " + (data ? data.length : 0));
   if(error){
     alert(error.message);
     return;
