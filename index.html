@@ -56,6 +56,13 @@ td,th{padding:10px;border:1px solid #ddd}
 <button onclick="loadReport()">SHOW REPORT</button>
 <div id="report"></div>
 </div>
+
+<div class="card">
+  <h3>Monthly Driver Report</h3>
+  <input id="reportMonth" type="month">
+  <button onclick="loadMonthlyReport()">SHOW MONTHLY REPORT</button>
+  <div id="monthlyReport"></div>
+</div>
 <script>
 alert("SCRIPT STARTED");
 const SUPABASE_URL = "https://bjzrdeondrggiwbsftlo.supabase.co";
@@ -173,6 +180,31 @@ html+='<tr><td>'+e["Employee name"]+'</td><td>'+count+'</td></tr>';
 });
 html+='</table>';
 document.getElementById('report').innerHTML=html;
+}
+async function loadMonthlyDriverReport()
+  const month=document.getElementById('reportMonth').value;
+  if(!month){alert('Select month');return;}
+
+  const start=month+'-01';
+  const next=new Date(month+'-01');
+  next.setMonth(next.getMonth()+1);
+  const end=next.toISOString().slice(0,10);
+
+  const {data,error}=await db.from('Delivery table')
+    .select('"Driver id"')
+    .gte('"Delivery date"',start)
+    .lt('"Delivery date"',end);
+
+  if(error){alert(error.message);return;}
+
+  let html='<table><tr><th>Driver</th><th>Invoices</th></tr>';
+  drivers.forEach(d=>{
+    const count=data.filter(x=>Number(x["Driver id"])===Number(d.id)).length;
+    html+='<tr><td>'+d["Driver name"]+'</td><td>'+count+'</td></tr>';
+  });
+  html+='</table>';
+
+  document.getElementById('monthlyReport').innerHTML=html;
 }
 
 loadDrivers();loadEmployees();
