@@ -133,17 +133,15 @@ const {error}=await db.from('Delivery table').insert({
 "Note":note
 });
 
+
 if(error){
-document.getElementById('message').textContent=
-'Error: '+error.message;
-return;
+  document.getElementById('message').textContent = 'Error: ' + error.message;
+  return;
 }
 
-document.getElementById('message').textContent=
-'Invoice saved successfully!';
-
-document.getElementById('invoice').value='';
-document.getElementById('note').value='';
+document.getElementById('message').textContent = 'Invoice saved successfully!';
+document.getElementById('invoice').value = '';
+document.getElementById('note').value = '';
 }
 
 async function loadReport(){
