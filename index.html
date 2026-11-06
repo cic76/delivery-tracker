@@ -148,12 +148,12 @@ async function loadReport(){
 const date=document.getElementById('reportDate').value;
 
 const {data,error}=await db.from('Delivery table')
-..select('"Driver id","Invoice number","Employee name"')
+.select('"Driver id","Invoice number","Employee name"')
 .eq('"Delivery date"',date);
 
 if(error){
 alert(error.message);
-return;t
+return;
 }
 
 let html='<table><tr><th>Driver</th><th>Invoices</th></tr>';
