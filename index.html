@@ -99,7 +99,9 @@ option.value=d.id;
 option.textContent=d["Driver name"].trim();
 select.appendChild(option);
 });
-}async function loadEmployees(){
+}
+
+async function loadEmployees(){
   const {data,error}=await db.from('Employee')
 .select('*');
 alert("Employees loaded: " + (data ? data.length : 0));
